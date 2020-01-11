@@ -39,7 +39,7 @@ def gensummary_elmo(template_vec,
     """
     Unsupervised sentence summary generation using beam search, by contextual matching and a summary style language model.
     The contextual matching here is on top of pretrained ELMo embeddings.
-    
+
     Input:
         - template_vec (torch.Tensor): forward only ELMo embeddings of the source sentence.
             'torch.Tensor' of size (3, seq_len, 512).
@@ -68,14 +68,14 @@ def gensummary_elmo(template_vec,
         - stopbyLMeos (bool): whether to stop a sentence solely by the language model predicting '<eos>' as the
             top possibility. Default: False.
         - devid (int): device id to run the algorithm and LSTM language models. 'int', default: 0. -1 for cpu.
-        **kwargs: other arguments input to function <Beam.beamstep>. 
+        **kwargs: other arguments input to function <Beam.beamstep>.
             E.g. - normalized (bool): whether to normalize the dot product when calculating the similarity,
                      which makes it cosine similarity. Default: True.
                  - ifadditive (bool): whether to use an additive model on mixing the probability scores. Default: False.
-    
+
     Output:
         - beam (beam_search.Beam): 'Beam' object, recording all the generated sequences.
-        
+
     """
     device = 'cpu' if devid == -1 else f'cuda:{devid}'
 
@@ -134,7 +134,7 @@ def gensummary_elmo(template_vec,
 def sortsummary(beam, beta=0):
     """
     Sort the generated summaries by beam search, with length penalty considered.
-    
+
     Input:
         - beam (beam_search.Beam): 'Beam' object finished with beam search.
         - beta (float): length penalty when sorting. Default: 0 (no length penalty).
@@ -167,7 +167,7 @@ def sortsummary(beam, beta=0):
 def fixlensummary(beam, length=-1):
     """
     Pull out fixed length summaries from the beam search.
-    
+
     Input:
         - beam (beam_search.Beam): 'Beam' object finished with beam search.
         - length (int): wanted length of the summary.
@@ -179,7 +179,7 @@ def fixlensummary(beam, length=-1):
 
     ssa = []
     for i in range(beam.K[length]):
-        sent, rebeam = beam.retrieve(i + 1, l)
+        sent, rebeam = beam.retrieve(i + 1, length)
         ssa.append((beam.beamseq[length][i].score,
                     sent,
                     beam.retrieve_align(rebeam),
@@ -396,7 +396,7 @@ if __name__ == '__main__':
     if not os.path.exists(closewordind_outembed_path):
         values, indices = findclosewords_vocab(vocab, embedmatrix, numwords=500)
         # save results
-        os.makedirs(os.path.dirname(closewordind_outembed_path_path), exist_ok=True)
+        os.makedirs(os.path.dirname(closewordind_outembed_path), exist_ok=True)
         pickle.dump(values, open(closewordsim_outembed_path, 'wb'))
         pickle.dump(indices, open(closewordind_outembed_path, 'wb'))
 
