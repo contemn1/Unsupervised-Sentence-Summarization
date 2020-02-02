@@ -194,7 +194,7 @@ def fixlensummary(beam, length=-1):
 ###############################################################################
 devid = 0
 
-##### for English giga words
+# for English giga words
 arttxtpath = './data/Giga-sum/input_unk_250.txt'
 # arttxtpath = './data/Giga-sum/input_unk_251-500.txt'
 # arttxtpath = './data/Giga-sum/input_unk_501-750.txt'
@@ -215,7 +215,7 @@ closeword_lmemb = './voctbls/vocabTleCloseWord'
 savedir = './results_elmo_giga/'
 '''
 
-##### for Google sentence compression dataset
+# for Google sentence compression dataset
 arttxtpath = '/n/rush_lab/users/jzhou/sentence-compression/dataclean/eval_src_1000_unk.txt'
 
 vocab_path = './lm_lstm_models/sentence_compression/vocabsctgt.pkl'
@@ -236,7 +236,7 @@ closeword_lmemb = './voctbls/vocabsctgtCloseWord'
 savedir = './results_elmo_sc_512/'
 '''
 
-##### beam search parameters
+# beam search parameters
 begineos = True
 appendsenteos = True
 eosavgemb = False
@@ -262,34 +262,45 @@ numwords_freq = 500
 # if fix generation length
 fixedlen = False
 genlen = '9'  # '9, 10, 11' for example for multiple lengths; including the starting '<eos>' token, and can include
-              # the ending '<eos>' token as well (if not 'stobbyLMeos')
+# the ending '<eos>' token as well (if not 'stobbyLMeos')
 
 ###############################################################################
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Unsupervised generation of summaries from source file.')
+    parser = argparse.ArgumentParser(
+        description='Unsupervised generation of summaries from source file.')
     # source file
-    parser.add_argument('--src', type=str, default=arttxtpath, help='source sentences file')
-    parser.add_argument('--devid', type=int, default=devid, help='device id; -1 for cpu')
+    parser.add_argument('--src', type=str, default=arttxtpath,
+                        help='source sentences file')
+    parser.add_argument('--devid', type=int, default=devid,
+                        help='device id; -1 for cpu')
     # preparations
-    parser.add_argument('--vocab', type=str, default=vocab_path, help='vocabulary file')
+    parser.add_argument('--vocab', type=str,
+                        default=vocab_path, help='vocabulary file')
     parser.add_argument('--modelclass', type=str, default=modelclass_path,
                         help='location of the model class definition file')
-    parser.add_argument('--model', type=str, default=model_path, help='pre-trained language model')
-    parser.add_argument('--closeword', type=str, default=closeword, help='character embedding close word tables')
+    parser.add_argument('--model', type=str, default=model_path,
+                        help='pre-trained language model')
+    parser.add_argument('--closeword', type=str, default=closeword,
+                        help='character embedding close word tables')
     parser.add_argument('--closeword_lmemb', type=str, default=closeword_lmemb,
                         help='LM output embedding close word tables')
-    parser.add_argument('--savedir', type=str, default=savedir, help='directory to save results')
+    parser.add_argument('--savedir', type=str, default=savedir,
+                        help='directory to save results')
     # beam search parameters
-    parser.add_argument('--begineos', type=int, default=int(begineos), help='whether to start with <eos>')
+    parser.add_argument('--begineos', type=int,
+                        default=int(begineos), help='whether to start with <eos>')
     parser.add_argument('--appendsenteos', type=int, default=int(appendsenteos),
                         help='whether to append <eos> at the end of source sentence')
     parser.add_argument('--eosavgemb', type=int, default=int(eosavgemb),
                         help='whether to encode <eos> using average hidden states')
-    parser.add_argument('--max_step', type=int, default=max_step, help='maximum beam step')
-    parser.add_argument('--beam_width', type=int, default=beam_width, help='beam width')
-    parser.add_argument('--beam_width_start', type=int, default=beam_width_start, help='beam width at first step')
+    parser.add_argument('--max_step', type=int,
+                        default=max_step, help='maximum beam step')
+    parser.add_argument('--beam_width', type=int,
+                        default=beam_width, help='beam width')
+    parser.add_argument('--beam_width_start', type=int,
+                        default=beam_width_start, help='beam width at first step')
     parser.add_argument('--renorm', type=int, default=int(renorm),
                         help='whether to renormalize the probabilities over the sub-vocabulary')
     parser.add_argument('--cluster', type=int, default=int(cluster),
@@ -298,12 +309,14 @@ def parse_args():
                         help='temperature used to smooth the output of the softmax layer')
     parser.add_argument('--elmo_layer', type=str, default=elmo_layer, choices=['bot', 'mid', 'top', 'avg', 'cat'],
                         help='elmo layer to use')
-    parser.add_argument('--alpha', type=float, default=alpha, help='mixture coefficient for LM')
+    parser.add_argument('--alpha', type=float, default=alpha,
+                        help='mixture coefficient for LM')
     parser.add_argument('--alpha_start', type=float, default=alpha_start,
                         help='mixture coefficient for LM for the first step')
     parser.add_argument('--stopbyLMeos', type=int, default=int(stopbyLMeos),
                         help='whether to stop the sentence solely by LM <eos> prediction')
-    parser.add_argument('--beta', type=int, default=beta, help='length penalty')
+    parser.add_argument('--beta', type=int, default=beta,
+                        help='length penalty')
     parser.add_argument('--n', type=int, default=numwords,
                         help='number of closest words for each token to form the candidate list')
     parser.add_argument('--ns', type=int, default=numwords_outembed,
@@ -323,7 +336,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    ##### input arguments
+    # input arguments
     arttxtpath = args.src
 
     devid = args.devid
@@ -333,15 +346,16 @@ if __name__ == '__main__':
     model_path = args.model
 
     closewordsim_path = args.closeword + 'Sims.pkl'
-    closewordind_path = args.closeword + 'Indices.pkl'  # character level word embeddings
+    closewordind_path = args.closeword + \
+        'Indices.pkl'  # character level word embeddings
     closewordsim_outembed_path = args.closeword_lmemb + 'Sims_outembed_' + \
-                                 os.path.splitext(os.path.basename(model_path))[0] + '.pkl'
+        os.path.splitext(os.path.basename(model_path))[0] + '.pkl'
     closewordind_outembed_path = args.closeword_lmemb + 'Indices_outembed_' + \
-                                 os.path.splitext(os.path.basename(model_path))[0] + '.pkl'
+        os.path.splitext(os.path.basename(model_path))[0] + '.pkl'
 
     device = 'cpu' if devid == -1 else f'cuda:{devid}'
 
-    ##### beam search parameters
+    # beam search parameters
     begineos = args.begineos
     appendsenteos = args.appendsenteos
     eosavgemb = args.eosavgemb if appendsenteos else False
@@ -362,39 +376,44 @@ if __name__ == '__main__':
     numwords_outembed = args.ns if args.ns != -1 else numwords
     numwords_freq = args.nf
     fixedlen = args.fixedlen
-    genlen = list(map(int, args.genlen.split(',')))  # including the starting '<eos>' token
+    # including the starting '<eos>' token
+    genlen = list(map(int, args.genlen.split(',')))
     # and can include the ending '<eos>' token as well (if not 'stobbyLMeos')
 
-    ##### read in the article/source sentences to be summarized
+    # read in the article/source sentences to be summarized
     g = open(arttxtpath, 'r')
     sents = [line.strip() for line in g if line.strip()]
     g.close()
     nsents = len(sents)
 
-    ##### load the ELMo forward embedder class
+    # load the ELMo forward embedder class
     ee = ElmoEmbedderForward(cuda_device=devid)
 
-    ##### load vocabulary and the pre-trained language model
+    # load vocabulary and the pre-trained language model
     vocab = pickle.load(open(vocab_path, 'rb'))
-
+    print(len(vocab))
     if modelclass_path not in sys.path:
-        sys.path.insert(1, modelclass_path)  # this is for torch.load to load the entire model
+        # this is for torch.load to load the entire model
+        sys.path.insert(1, modelclass_path)
         # the model class file must be included in the search path
     LMModel = torch.load(model_path, map_location=torch.device(device))
     embedmatrix = LMModel.proj.weight
-
-    ##### check if the close_tables exist already; if not, generate
+    print(closewordind_path)
+    print(closewordind_outembed_path)
+    # check if the close_tables exist already; if not, generate
     if not os.path.exists(closewordind_path):
         # character embeddings of the vocabulary
         embedmatrix_cnn = ELMoBotEmbedding(vocab.itos, device=devid)
-        values_cnn, indices_cnn = findclosewords_vocab(vocab, embedmatrix_cnn, numwords=500)
+        values_cnn, indices_cnn = findclosewords_vocab(
+            vocab, embedmatrix_cnn, numwords=500)
         # save results
         os.makedirs(os.path.dirname(closewordind_path), exist_ok=True)
         pickle.dump(values_cnn, open(closewordsim_path, 'wb'))
         pickle.dump(indices_cnn, open(closewordind_path, 'wb'))
 
     if not os.path.exists(closewordind_outembed_path):
-        values, indices = findclosewords_vocab(vocab, embedmatrix, numwords=500)
+        values, indices = findclosewords_vocab(
+            vocab, embedmatrix, numwords=500)
         # save results
         os.makedirs(os.path.dirname(closewordind_outembed_path), exist_ok=True)
         pickle.dump(values, open(closewordsim_outembed_path, 'wb'))
@@ -403,13 +422,14 @@ if __name__ == '__main__':
     closewordind = pickle.load(open(closewordind_path, 'rb'))
     closewordind_outembed = pickle.load(open(closewordind_outembed_path, 'rb'))
 
-    ##### generate save file name
+    # generate save file name
     basename = os.path.basename(arttxtpath)
     basename = os.path.splitext(basename)[0]
 
     savedir = args.savedir
 
-    smrypath = os.path.join(savedir, 'smry_') + basename + f'_Ks{beam_width_start}' + f'_clust{int(cluster)}'
+    smrypath = os.path.join(savedir, 'smry_') + basename + \
+        f'_Ks{beam_width_start}' + f'_clust{int(cluster)}'
 
     if renorm:
         smrypath += f'_renorm{int(renorm)}'
@@ -433,11 +453,12 @@ if __name__ == '__main__':
         smrypath += f'_as{alpha_start}'
     if fixedlen:
         genlen = sorted(genlen)
-        smrypath_list = [smrypath + f'_length{l - 1}' + f'_a{alpha}' + '_all.txt' for l in genlen]
+        smrypath_list = [
+            smrypath + f'_length{l - 1}' + f'_a{alpha}' + '_all.txt' for l in genlen]
     else:
         smrypath += f'_a{alpha}' + f'_b{beta}' + '_all.txt'
 
-    ##### run summary generation and write to file
+    # run summary generation and write to file
     if fixedlen:
         os.makedirs(os.path.dirname(smrypath), exist_ok=True)
         g_list = [open(fname, 'w') for fname in smrypath_list]
@@ -451,7 +472,7 @@ if __name__ == '__main__':
         if appendsenteos:
             template += ' <eos>'
 
-        ### Find the close words to those in the template sentence
+        # Find the close words to those in the template sentence
         # word_list, subvocab = findwordlist(template, closewordind, vocab, numwords=1, addeos=True)
         # word_list, subvocab = findwordlist_screened(template, closewordind, closewordind_outembed,
         #                                             vocab, numwords=6, addeos=True)
@@ -461,7 +482,7 @@ if __name__ == '__main__':
         if cluster:
             clustermask = clmk_nn(embedmatrix, subvocab)
 
-        ### ELMo embedding of the template sentence
+        # ELMo embedding of the template sentence
         if eosavgemb is False:
             template_vec, _ = ee.embed_sentence(template.split(), add_bos=True)
         else:
@@ -476,11 +497,12 @@ if __name__ == '__main__':
                 template_vec = current_embed if template_vec is None else torch.cat([template_vec, current_embed],
                                                                                     dim=1)
             hiddens_h, hiddens_c = zip(*hiddens)
-            hiddens_avg = (sum(hiddens_h) / len(hiddens_h), sum(hiddens_c) / len(hiddens_c))
+            hiddens_avg = (sum(hiddens_h) / len(hiddens_h),
+                           sum(hiddens_c) / len(hiddens_c))
             eosavg, _ = ee.embed_sentence(['<eos>'], initial_state=hiddens_avg)
             template_vec = torch.cat([template_vec, eosavg], dim=1)
 
-        ### beam search
+        # beam search
         max_step_temp = min([len(template.split()), max_step])
         beam = gensummary_elmo(template_vec,
                                ee,
@@ -503,7 +525,7 @@ if __name__ == '__main__':
                                ifadditive=ifadditive,
                                devid=devid)
 
-        ### sort and write to file
+        # sort and write to file
         if fixedlen:
             for j in range(len(genlen) - 1, -1, -1):
                 g_list[j].write('-' * 5 + f'<{ind + 1}>' + '-' * 5 + '\n')
@@ -517,7 +539,8 @@ if __name__ == '__main__':
                             g_list[j].write(' '.join(ssa[m][1][1:]) + '\n')
                             g_list[j].write('{:.3f}'.format(ssa[m][0]) + '   ' + '{:.3f}'.format(ssa[m][3])
                                             + '   ' + '{:.3f}'.format(ssa[m][4]) + '\n')
-                            g_list[j].writelines(['%d,   ' % loc for loc in ssa[m][2]])
+                            g_list[j].writelines(
+                                ['%d,   ' % loc for loc in ssa[m][2]])
                             g_list[j].write('\n')
                         g_list[j].write('\n')
                 else:
@@ -528,19 +551,10 @@ if __name__ == '__main__':
                     os.fsync(g_list[j].fileno())
         else:
             ssa = sortsummary(beam, beta=beta)
-            g.write('-' * 5 + f'<{ind + 1}>' + '-' * 5 + '\n')
-            g.write('\n')
             if ssa == []:
                 g.write('\n')
             else:
-                for m in range(len(ssa)):
-                    g.write(' '.join(ssa[m][1][1:]) + '\n')
-                    g.write('{:.3f}'.format(ssa[m][0]) + '   ' + '{:.3f}'.format(ssa[m][3]) + '   ' + '{:.3f}'.format(
-                        ssa[m][4]) + '\n')
-                    g.writelines(['%d,   ' % loc for loc in ssa[m][2]])
-                    g.write('\n')
-                g.write('\n')
-
+                g.write(' '.join(ssa[0][1][1:]) + '\n')
             if (ind + 1) % 10 == 0:
                 g.flush()
                 os.fsync(g.fileno())

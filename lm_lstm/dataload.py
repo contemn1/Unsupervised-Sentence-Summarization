@@ -50,7 +50,7 @@ def loadLMdata(path='E:/NLP/LM/data/penn-tree-bank-small',
     """
     Load a dataset for LM training. The dataset should exist already.
     """
-    TEXT = torchtext.data.Field(lower=True)
+    TEXT = torchtext.data.Field(lower=False)
     train, val, test = torchtext.datasets.LanguageModelingDataset.splits(path=path,
                                                   train=train,
                                                   validation=val,

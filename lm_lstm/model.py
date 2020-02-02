@@ -38,6 +38,7 @@ class RNNModel(nn.Module):
         
     def forward(self, batch_text, hn, subvocab=None, return_prob=False):
         embed = self.embedding(batch_text)    # size: (seq_len, batch_size, embed_size)
+        self.lstm.flatten_parameters()
         output, hn = self.lstm(embed, hn)     # output size: (seq_len, batch_size, hidden_size)
         output = self.drop(output)            # hn = (hn, cn), each with size: (num_layers, batch, hidden_size)
         if isinstance(subvocab, list):

@@ -93,7 +93,6 @@ def findwordlist_screened2(template, closewordind, closewordind_outembed, vocab,
     subvocab = closewordind[templateind, :numwords].view(-1).cpu()
     subvocab_embed = closewordind_outembed[templateind, 1:numwords_outembed].view(-1).cpu()
     subvocab_intemplate = closewordind[templateind, 0].view(-1).cpu()
-    
     subvocab_mask = torch.zeros(len(vocab), dtype=torch.uint8, device=subvocab.device)
     subvocab_mask[subvocab] = 1
     subvocab_embed_mask = torch.zeros(len(vocab), dtype=torch.uint8, device=subvocab.device)
