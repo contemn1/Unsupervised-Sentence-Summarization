@@ -55,7 +55,10 @@ def findwordlist_screened(template, closewordind, closewordind_outembed, vocab, 
     subvocab_screened_mask[subvocab_intemplate] = 1        # add back the words in the template sentence
     if addeos:
         subvocab_screened_mask[vocab.stoi['<eos>']] = 1
-    
+
+    if torch.__version__ >= "1.2.0":
+        subvocab_screened_mask = subvocab_screened_mask.bool()
+
     subvocab_screened = torch.arange(len(vocab), dtype=torch.long, device=subvocab.device)
     subvocab_screened = subvocab_screened[subvocab_screened_mask]
     
@@ -102,7 +105,10 @@ def findwordlist_screened2(template, closewordind, closewordind_outembed, vocab,
     subvocab_screened_mask[subvocab_intemplate] = 1        # add back the words in the template sentence
     if addeos:
         subvocab_screened_mask[vocab.stoi['<eos>']] = 1
-    
+
+    if torch.__version__ >= "1.2.0":
+        subvocab_screened_mask = subvocab_screened_mask.bool()
+
     subvocab_screened = torch.arange(len(vocab), dtype=torch.long, device=subvocab.device)
     subvocab_screened = subvocab_screened[subvocab_screened_mask]
     
