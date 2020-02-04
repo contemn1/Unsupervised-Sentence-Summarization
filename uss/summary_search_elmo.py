@@ -150,7 +150,8 @@ def sortsummary(beam, beta=0):
 
     for ks in beam.endbus:
         sent, rebeam = beam.retrieve(ks[0] + 1, ks[1])
-        score_avg = ks[2] / (ks[1] ** beta)
+        length_norm = ((ks[1] + 5) / 6) ** beta
+        score_avg = ks[2] / length_norm
 
         sents.append(sent)
         aligns.append(beam.retrieve_align(rebeam))
