@@ -8,7 +8,6 @@ Jiawei Zhou, Alexander Rush
 <img src=figure1.png>
 <!---<img src=figure1.png width="500" height="500">--->
 
-
 ## Overview
 
 Using contextual word embeddings (e.g. pre-trained ELMo model) along with a language model trained on summary style sentences, we are able to find sentence level summarizations in an unsupervised way without being exposed to any paired data.

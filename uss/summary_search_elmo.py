@@ -555,7 +555,13 @@ if __name__ == '__main__':
             if ssa == []:
                 g.write('\n')
             else:
-                g.write(' '.join(ssa[0][1][1:]) + '\n')
+                for m in range(len(ssa)):
+                    g.write(' '.join(ssa[m][1][1:]) + '\n')
+                    g.write('{:.3f}'.format(ssa[m][0]) + '   ' + '{:.3f}'.format(ssa[m][3]) + '   ' + '{:.3f}'.format(
+                        ssa[m][4]) + '\n')
+                    g.writelines(['%d,   ' % loc for loc in ssa[m][2]])
+                    g.write('\n')
+                g.write('\n')
             if (ind + 1) % 10 == 0:
                 g.flush()
                 os.fsync(g.fileno())
