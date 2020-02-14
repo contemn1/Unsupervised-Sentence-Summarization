@@ -316,7 +316,7 @@ def parse_args():
                         help='mixture coefficient for LM for the first step')
     parser.add_argument('--stopbyLMeos', type=int, default=int(stopbyLMeos),
                         help='whether to stop the sentence solely by LM <eos> prediction')
-    parser.add_argument('--beta', type=int, default=beta,
+    parser.add_argument('--beta', type=float, default=beta,
                         help='length penalty')
     parser.add_argument('--n', type=int, default=numwords,
                         help='number of closest words for each token to form the candidate list')
